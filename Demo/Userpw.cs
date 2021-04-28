@@ -8,6 +8,7 @@ public static class Userpw
 
 	private static bool cmp(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
 	{
+		//https://stackoverflow.com/questions/43289/comparing-two-byte-arrays-in-net
 		return a.SequenceEqual(b);
 	}
 

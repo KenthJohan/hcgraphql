@@ -20,6 +20,7 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using Serilog;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 #nullable disable
@@ -42,9 +43,9 @@ namespace Demo
 			Log.Information("Connection string {s}", s);
 		}
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder builder)
 		{
-
+			builder.Entity<User>().HasIndex(u => u.email).IsUnique();
 		}
 	}
 }
