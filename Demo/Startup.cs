@@ -18,10 +18,12 @@ namespace Demo
 
 			services
 				.AddGraphQLServer()
-				.AddQueryType<Query>()
+				.AddType<User_Resolver>()
+				.AddQueryType(d => d.Name("Query"))
+					.AddTypeExtension<User_Query>()
+					.AddTypeExtension<Book_Query>()
 				.AddMutationType(d => d.Name("Mutation"))
 					.AddTypeExtension<User_Mutation>();
-
 
 		}
 
@@ -46,6 +48,8 @@ namespace Demo
 			*/
 
 			app.UseWebSockets();
+			app.UseDefaultFiles();
+			app.UseStaticFiles();
 
 			app
 				.UseRouting()

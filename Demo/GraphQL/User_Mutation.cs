@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+
 
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +20,7 @@ namespace Demo
 	{
 		private readonly ILogger log = Log.ForContext<User_Mutation>();
 
-		public async Task<bool> user_register([Service] Demo_Context context, string email, string password)
+		public IQueryable<User> user_register([Service] Demo_Context context, string email, string password)
 		{
 			if (string.IsNullOrEmpty(email))
 			{
@@ -40,27 +42,41 @@ namespace Demo
 
 			User user = new User{email = email};
 			user.guid = Guid.NewGuid();
-			user.pwhash64 = Userpw.SHA512_make(user.guid, password);
+			user.pwhash = Userpw.PBKDF2_newhash(password, 16, 20, 100000);
 
 			log.Information("Adding {@User}", user);
-			context.Users.Add(user);
+			context.users.Add(user);
 			try
 			{
-				await context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 			catch
 			{
-				return false;
+				return null;
 			}
-			return true;
+
+
+			context.books.Add(new Book{author_id = user.id, name = "Hello1"});
+			context.books.Add(new Book{author_id = user.id, name = "Hello2"});
+			context.books.Add(new Book{author_id = user.id, name = "Hello3"});
+			try
+			{
+				context.SaveChanges();
+			}
+			catch
+			{
+				return null;
+			}
+			
+			return context.users.Where(u => u.id == user.id);
 		}
 
-		public async Task<bool> user_login([Service] Demo_Context context, string email, string password)
+		public IQueryable<User> user_login([Service] Demo_Context context, string email, string password)
 		{
-			User user = await context.Users.FirstOrDefaultAsync(u => u.email == email);
-			bool success = Userpw.SHA512_compare(user.pwhash64, user.guid, password);
+			User user = context.users.FirstOrDefault(u => u.email == email);
+			bool success = Userpw.PBKDF2_verify(user.pwhash, password, 16, 20, 100000);
 			log.Information("The {@User} logged in: {success}", user, success);
-			return success;
+			return context.users.Where(u => u.id == user.id);
 		}
 
 

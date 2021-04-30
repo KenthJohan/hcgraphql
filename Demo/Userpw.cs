@@ -6,36 +6,38 @@ using System.IO;
 public static class Userpw
 {
 
-	private static bool cmp(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
+	public static byte[] PBKDF2_newhash(string password, int sn, int pn, int n)
 	{
-		//https://stackoverflow.com/questions/43289/comparing-two-byte-arrays-in-net
-		return a.SequenceEqual(b);
-	}
-
-	private static byte[] concat(byte[] a, byte[] b)
-	{
-		//https://stackoverflow.com/questions/895120/append-two-or-more-byte-arrays-in-c-sharp
-		var s = new MemoryStream();
-		s.Write(a, 0, a.Length);
-		s.Write(b, 0, b.Length);
-		return s.ToArray();
-	}
-
-	public static byte[] SHA512_make(Guid guid, string password)
-	{
-		byte[] buf = concat(guid.ToByteArray(), Encoding.UTF8.GetBytes(password));
-		using var sha = SHA512.Create();
-		byte[] hash64 = sha.ComputeHash(buf);
-		return hash64;
+		byte[] salt;
+		new RNGCryptoServiceProvider().GetBytes(salt = new byte[sn]);
+		var pbkdf2 = new Rfc2898DeriveBytes(password, salt, n);
+		byte[] pwhash = pbkdf2.GetBytes(pn);
+		byte[] h = new byte[sn+pn];
+		Array.Copy(salt, 0, h, 0, sn);
+		Array.Copy(pwhash, 0, h, sn, pn);
+		return h;
 	}
 
 
-	public static bool SHA512_compare(byte[] hash, Guid guid, string password)
+	public static bool PBKDF2_verify(byte[] pwhash, string password, int sn, int pn, int n)
 	{
-		byte[] buf = concat(guid.ToByteArray(), Encoding.UTF8.GetBytes(password));
-		using var sha = SHA512.Create();
-		byte[] h = sha.ComputeHash(buf);
-		return cmp(hash, h);
+		byte[] salt16 = new byte[sn];
+		Array.Copy(pwhash, 0, salt16, 0, sn);
+		var pbkdf2 = new Rfc2898DeriveBytes(password, salt16, n);
+		byte[] hash = pbkdf2.GetBytes(pn);
+		for (int i = 0; i < pn; i++)
+		{
+			if (pwhash[i+sn] != hash[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
+
+
+
+
+
 
 }

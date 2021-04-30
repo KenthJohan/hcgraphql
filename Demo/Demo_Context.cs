@@ -29,7 +29,8 @@ namespace Demo
 {
 	public class Demo_Context : DbContext
 	{
-		public DbSet<User> Users { get; set; }
+		public DbSet<User> users { get; set; }
+		public DbSet<Book> books { get; set; }
 
 		public Demo_Context(DbContextOptions<Demo_Context> options)
 			: base(options)
@@ -46,6 +47,12 @@ namespace Demo
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder.Entity<User>().HasIndex(u => u.email).IsUnique();
+
+			builder.Entity<User>()
+				.HasMany(t => t.books)
+				.WithOne(t => t.author)
+				.HasForeignKey(t => t.author_id);
+
 		}
 	}
 }

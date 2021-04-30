@@ -18,8 +18,11 @@ namespace Demo
 
 		public string email { get; set; }
 
-		[MaxLength(64)]
-		[MinLength(64)]
-		public byte[] pwhash64 { get; set; }
+		[MaxLength(36)]
+		[MinLength(36)]
+		public byte[] pwhash { get; set; }
+
+
+		public ICollection<Book> books { get; set; }
 	}
 }
