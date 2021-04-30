@@ -3,10 +3,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.IO;
 
-public static class Userpw
+public static class PBKDF2
 {
 
-	public static byte[] PBKDF2_newhash(string password, int sn, int pn, int n)
+	public static byte[] genhash(string password, int sn, int pn, int n)
 	{
 		byte[] salt;
 		new RNGCryptoServiceProvider().GetBytes(salt = new byte[sn]);
@@ -19,11 +19,11 @@ public static class Userpw
 	}
 
 
-	public static bool PBKDF2_verify(byte[] pwhash, string password, int sn, int pn, int n)
+	public static bool verify(byte[] pwhash, string password, int sn, int pn, int n)
 	{
-		byte[] salt16 = new byte[sn];
-		Array.Copy(pwhash, 0, salt16, 0, sn);
-		var pbkdf2 = new Rfc2898DeriveBytes(password, salt16, n);
+		byte[] salt = new byte[sn];
+		Array.Copy(pwhash, 0, salt, 0, sn);
+		var pbkdf2 = new Rfc2898DeriveBytes(password, salt, n);
 		byte[] hash = pbkdf2.GetBytes(pn);
 		for (int i = 0; i < pn; i++)
 		{

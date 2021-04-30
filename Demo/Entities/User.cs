@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HotChocolate;
 using HotChocolate.Types;
+using HotChocolate.AspNetCore;
 
 namespace Demo
 {
@@ -16,6 +17,7 @@ namespace Demo
 
 		public Guid guid { get; set; }
 
+		[GraphQLDescription("Your email")]
 		public string email { get; set; }
 
 		[MaxLength(36)]

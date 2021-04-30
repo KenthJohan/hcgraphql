@@ -14,11 +14,14 @@ namespace Demo
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<Demo_Context>();
+			//https://entityframeworkcore.com/knowledge-base/53150930/how-to-avoid-not-safe-context-operations-in-ef-core-
+			services.AddDbContext<Demo_Context>(ServiceLifetime.Transient);
+			//services.AddTransient<Demo_Context>();
 
 			services
 				.AddGraphQLServer()
 				.AddType<User_Resolver>()
+				.AddType<Book_Resolver>()
 				.AddQueryType(d => d.Name("Query"))
 					.AddTypeExtension<User_Query>()
 					.AddTypeExtension<Book_Query>()

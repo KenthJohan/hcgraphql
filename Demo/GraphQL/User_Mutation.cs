@@ -30,7 +30,6 @@ namespace Demo
 						.SetCode("EMAIL_EMPTY")
 						.Build());
 			}
-
 			if (string.IsNullOrEmpty(password))
 			{
 				throw new QueryException(
@@ -42,7 +41,7 @@ namespace Demo
 
 			User user = new User{email = email};
 			user.guid = Guid.NewGuid();
-			user.pwhash = Userpw.PBKDF2_newhash(password, 16, 20, 100000);
+			user.pwhash = PBKDF2.genhash(password, 16, 20, 100000);
 
 			log.Information("Adding {@User}", user);
 			context.users.Add(user);
@@ -73,10 +72,31 @@ namespace Demo
 
 		public IQueryable<User> user_login([Service] Demo_Context context, string email, string password)
 		{
+			if (string.IsNullOrEmpty(email))
+			{
+				throw new QueryException(
+					ErrorBuilder.New()
+						.SetMessage("The email cannot be empty.")
+						.SetCode("EMAIL_EMPTY")
+						.Build());
+			}
+			if (string.IsNullOrEmpty(password))
+			{
+				throw new QueryException(
+					ErrorBuilder.New()
+						.SetMessage("The password cannot be empty.")
+						.SetCode("PASSWORD_EMPTY")
+						.Build());
+			}
 			User user = context.users.FirstOrDefault(u => u.email == email);
-			bool success = Userpw.PBKDF2_verify(user.pwhash, password, 16, 20, 100000);
-			log.Information("The {@User} logged in: {success}", user, success);
-			return context.users.Where(u => u.id == user.id);
+			bool success = PBKDF2.verify(user.pwhash, password, 16, 20, 100000);
+			if (success)
+			{
+				log.Information("The {@User} logged in: {success}", user, success);
+				return context.users.Where(u => u.id == user.id);
+			}
+
+			return null;
 		}
 
 

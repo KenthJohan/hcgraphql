@@ -6,6 +6,13 @@ using Serilog;
 
 using HotChocolate;
 using HotChocolate.Types;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using HotChocolate;
+using HotChocolate.Types;
+using HotChocolate.Types.Relay;
 
 
 namespace Demo
@@ -19,10 +26,16 @@ namespace Demo
 			return Convert.ToBase64String(user.pwhash);
 		}
 
+		public int id_times_20(User user)
+		{
+			return user.id * 20;
+		}
+
 		public IQueryable<Book> GetBooks(User user, [Service] Demo_Context context)
 		{
 			return context.books.Where(b => b.author_id == user.id);
 		}
+
 	}
 
 
@@ -35,5 +48,11 @@ namespace Demo
 		{
 			return context.users;
 		}
+
+		public IQueryable<User> GetUserById([Service] Demo_Context context, [ID(nameof(User))]int id) 
+		{
+			return context.users.Where(u => u.id == id);
+		}
+
 	}
 }
