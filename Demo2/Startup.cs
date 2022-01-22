@@ -19,7 +19,9 @@ namespace Demo
 			//services.AddTransient<Demo_Context>();
 
 			services
+				.AddRouting()
 				.AddGraphQLServer()
+				.AddProjections()
 				.AddType<User_Resolver>()
 				.AddType<Book_Resolver>()
 				.AddQueryType(d => d.Name("Query"))

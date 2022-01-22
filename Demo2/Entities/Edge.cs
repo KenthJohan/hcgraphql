@@ -10,10 +10,9 @@ namespace Demo
 {
 	public class Edge
 	{
-		[Key]
-		[ForeignKey("entity")]
-		public int entity_id { get; set; }
-		public virtual Entity entity { get; set; }
+		[ForeignKey("relation")]
+		public int relation_id { get; set; }
+		public virtual Entity relation { get; set; }
 
 		[ForeignKey("a")]
 		public int a_id { get; set; }

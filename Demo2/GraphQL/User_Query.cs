@@ -6,13 +6,9 @@ using Serilog;
 
 using HotChocolate;
 using HotChocolate.Types;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HotChocolate;
-using HotChocolate.Types;
-using HotChocolate.Types.Relay;
+using HotChocolate.Data;
+using HotChocolate.AspNetCore;
+using HotChocolate.Types.Descriptors;
 
 
 namespace Demo
@@ -44,14 +40,15 @@ namespace Demo
 	{
 		private readonly ILogger log = Log.ForContext<User_Query>();
 
-		public IQueryable<User> GetUsers([Service] Demo_Context context)
+		public IQueryable<User> users([Service] Demo_Context context)
 		{
 			return context.users;
 		}
 
-		public IQueryable<User> GetUserById([Service] Demo_Context context, [ID(nameof(User))]int id) 
+		[UseProjection]
+		public IQueryable<Entity> entities([Service] Demo_Context context)
 		{
-			return null;
+			return context.entities;
 		}
 
 	}

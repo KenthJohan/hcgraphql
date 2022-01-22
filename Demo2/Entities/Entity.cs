@@ -20,9 +20,12 @@ namespace Demo
 		
 		public virtual Book book { get; set; }
 		public virtual User user { get; set; }
-		public virtual Edge edge { get; set; }
 		public virtual Product product { get; set; }
 		public virtual Building building { get; set; }
+
+		public virtual List<Edge> edges { get; set; }
+		public virtual List<Edge> edges1 { get; set; }
+		public virtual List<Edge> edges2 { get; set; }
 	}
 
 }

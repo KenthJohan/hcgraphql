@@ -23,6 +23,15 @@ namespace Demo
 				//If all tables are dropped then they will be created here:
 				//dropall(context);
 				//context.Database.ExecuteSqlRaw("DROP TABLE course_user_edges CASCADE");
+				var del = context.Database.EnsureDeleted();
+				if (del)
+				{
+					Log.Information("Arena: Database Deleted");
+				}
+				else
+				{
+					Log.Information("Arena: Database not Deleted");
+				}
 				var created = context.Database.EnsureCreated();
 				if (created)
 				{
@@ -38,22 +47,49 @@ namespace Demo
 
 		public static void db_add_example(Demo_Context context)
 		{
-			var entities = new User[]
+
+			var relation_owner = new Entity{name="Owner"};
+
+			var tower1 = new Entity{name="Tower1", building = new Building{}};
+			var tower2 = new Entity{name="Tower2", building = new Building{}};
+			var Meredith = new Entity{name="Meredith"};
+
+			var entities = new Entity[]
 			{
-			new User{entity = new Entity{name="Carson"}},
-			new User{entity = new Entity{name="Meredith"}},
-			new User{entity = new Entity{name="Arturo"}},
-			new User{entity = new Entity{name="Gytis"}},
-			new User{entity = new Entity{name="Yan"}},
-			new User{entity = new Entity{name="Peggy"}},
-			new User{entity = new Entity{name="Laura"}},
-			new User{entity = new Entity{name="Nino"}}
+			relation_owner,
+			tower1,
+			tower2,
+			Meredith,
+			new Entity{name="Carson",user = new User{email="Carson"}},
+			new Entity{name="Arturo"},
+			new Entity{name="Gytis"},
+			new Entity{name="Yan"},
+			new Entity{name="Peggy",user = new User{email="Peggy"}, product = new Product{price=1000}},
+			new Entity{name="Laura"},
+			new Entity{name="M4", product = new Product{price=1}},
+			new Entity{name="M5", product = new Product{price=2}},
 			};
-			foreach (User e in entities)
+			foreach (Entity e in entities)
 			{
-				context.users.Add(e);
+				context.entities.Add(e);
 			}
 			context.SaveChanges();
+
+
+
+			var e1 = new Edge{relation_id = relation_owner.id, a_id = Meredith.id, b_id = tower1.id};
+			var e2 = new Edge{relation_id = relation_owner.id, a_id = Meredith.id, b_id = tower2.id};
+			context.edges.Add(e1);
+			context.edges.Add(e2);
+			context.SaveChanges();
+
+
+
+
+
+
+
+
 			/*
 
 			var properties = new Course_Property[]
