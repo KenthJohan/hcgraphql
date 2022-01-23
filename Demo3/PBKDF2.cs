@@ -9,7 +9,7 @@ public static class PBKDF2
 	public static byte[] genhash(string password, int sn, int pn, int n)
 	{
 		byte[] salt;
-		new RNGCryptoServiceProvider().GetBytes(salt = new byte[sn]);
+		RandomNumberGenerator.Create().GetBytes(salt = new byte[sn]);
 		var pbkdf2 = new Rfc2898DeriveBytes(password, salt, n);
 		byte[] pwhash = pbkdf2.GetBytes(pn);
 		byte[] h = new byte[sn+pn];
